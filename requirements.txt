@@ -1,0 +1,9 @@
+openai-whisper
+python-dotenv
+sounddevice
+scipy
+pydub
+
+langchain
+langchain_community
+openai
