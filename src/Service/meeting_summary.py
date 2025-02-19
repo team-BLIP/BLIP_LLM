@@ -34,6 +34,6 @@ class MeetingSummarizer:
 
 # load_dotenv()
 # answer = MeetingSummarizer().summarize_meeting(os.getenv('MEETING_NOTES_PATH'))
-# print(answer)
+# print(answer, answer)
 
 
