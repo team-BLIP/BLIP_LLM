@@ -10,6 +10,7 @@ class MeetingSummarizer:
     def __init__(self):
         load_dotenv()
         self.api_key = os.getenv('OPENAI_API_KEY')
+        self.file_path = os.getenv('MEETING_NOTES_PATH')
 
         self.template = """
         너는 회의 내용을 요약하는 AI야. 회의 내용을 알아보기 쉽고 이해하기 쉽게 정리해줘.
@@ -24,13 +25,14 @@ class MeetingSummarizer:
         self.prompt = ChatPromptTemplate.from_template(self.template)
         self.model = ChatOpenAI(model_name = 'gpt-4o', temperature=0)
     
-    def summarize_meeting(self, file_path):
-        with open(file_path, 'r', encoding='utf-8') as f:
+    def summarize_meeting(self):
+        with open(self.file_path, 'r', encoding='utf-8') as f:
             meeting_text = f.read()
         
         formatted_prompt = self.prompt.format(회의내용=meeting_text)
         output = self.model.invoke(formatted_prompt)
         return output.content
+
 
 # load_dotenv()
 # answer = MeetingSummarizer().summarize_meeting(os.getenv('MEETING_NOTES_PATH'))
