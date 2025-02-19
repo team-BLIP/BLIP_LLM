@@ -25,11 +25,6 @@ class PersonalFeedback:
         추가 개선 사항이 있다면 말해주면 좋아.
         """
 
-        self.prompt = PromptTemplate(
-            template=self.template,
-            input_variables=['회의내용'],
-        )
-
         self.prompt = ChatPromptTemplate.from_template(self.template)
         self.model = ChatOpenAI(model_name='gpt-4o', temperature=0)
     
