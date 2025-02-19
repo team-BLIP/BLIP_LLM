@@ -7,3 +7,6 @@ pydub
 langchain
 langchain_community
 openai
+
+fastapi
+uvicorn

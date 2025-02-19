@@ -3,10 +3,7 @@ from dotenv import load_dotenv
 
 from langchain_openai import ChatOpenAI
 from langchain.prompts import (
-    ChatPromptTemplate,
-    PromptTemplate,
-    SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate
+    ChatPromptTemplate
 )
 
 class MeetingSummarizer:
@@ -23,24 +20,20 @@ class MeetingSummarizer:
         <회의 내용>
         {회의내용}
         """
-    
-        self.prompt_template = PromptTemplate(
-            input_variables= ['회의내용'],
-            template=self.template
-        )
 
+        self.prompt = ChatPromptTemplate.from_template(self.template)
         self.model = ChatOpenAI(model_name = 'gpt-4o', temperature=0)
     
     def summarize_meeting(self, file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             meeting_text = f.read()
         
-        system_message_prompt = SystemMessagePromptTemplate.from_template(self.template)
-        human_message_prompt = HumanMessagePromptTemplate.from_template('{회의내용}')
-        chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
-        answer = self.model(chat_prompt.format_prompt(회의내용=meeting_text).to_messages())
-        return answer.content
+        formatted_prompt = self.prompt.format(회의내용=meeting_text)
+        output = self.model.invoke(formatted_prompt)
+        return output.content
 
-load_dotenv()
-answer = MeetingSummarizer().summarize_meeting(os.getenv('MEETING_NOTES_PATH'))
-print(answer)
+# load_dotenv()
+# answer = MeetingSummarizer().summarize_meeting(os.getenv('MEETING_NOTES_PATH'))
+# print(answer)
+
+
