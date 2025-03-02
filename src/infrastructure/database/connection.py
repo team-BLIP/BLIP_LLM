@@ -4,6 +4,9 @@ from src.infrastructure.env_variable import DATABASE_URL
 from sqlalchemy.ext.automap import automap_base
 import logging
 
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL 환경 변수가 설정되지 않았습니다.")
+
 try:
     engine = create_engine(DATABASE_URL)
     
@@ -27,3 +30,14 @@ try:
 except Exception as e:
     logging.error(f"데이터베이스 연결 또는 매핑 중 오류 발생: {str(e)}")
     raise
+
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+
+def get_db():
+    session = SessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
+
+
