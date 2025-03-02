@@ -1,13 +1,10 @@
-import os
-from dotenv import load_dotenv
-
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
+from src.infrastructure.env_variable import OPENAI_API_KEY
 
 class PersonalFeedback:
     def __init__(self):
-        load_dotenv()
-        self.api_key = os.getenv('OPENAI_API_KEY')
+        self.api_key = OPENAI_API_KEY
 
         self.template = """
         <한 사람의 회의 내용>
