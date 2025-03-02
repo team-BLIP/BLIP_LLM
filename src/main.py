@@ -1,10 +1,10 @@
 from fastapi import FastAPI
-from router import summary_router
+from src.router import recording_router
 
 app = FastAPI()
+app.include_router(recording_router.router)
 
-app.include_router(summary_router.router)
-
-@app.get("/")
+@app.get('/')
 def root():
-    return {"message": "hello"}
+    return "hello"
+

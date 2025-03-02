@@ -7,7 +7,11 @@ pydub
 langchain
 langchain_community
 openai
+langchain_openai
 
 fastapi
 uvicorn
 pydantic
+pyjwt
+pymysql
+python-jose
