@@ -10,7 +10,9 @@ class BLIPRepository:
     def find_by_email(self, email : str) -> User | None:
         return self.session.scalar(select(User).where(User.email == email))
     
-    def feedback_save(slef):
-        pass #나중개발
+    def feedback_save(self):
+        # TODO: 피드백 저장 기능 구현 필요
+        pass
     def summary_save(self):
-        pass #나중개발
+        # TODO: 요약 저장 기능 구현 필요 
+        pass
