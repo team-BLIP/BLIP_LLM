@@ -52,7 +52,7 @@ class MeetingSummary:
             return_intermediate_steps=False,
         )
 
-    def generate_text(self, text):
+    def generate_text(self, text:str):
         texts = self.text_splitter.create_documents([text])
         summary_result = self.map_reduce_chain.invoke({'input_documents': texts})
         return summary_result['output_text']
