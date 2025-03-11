@@ -4,6 +4,9 @@ from enum import Enum
 
 router = APIRouter()
 
+
+#TODO
+#다른 방식으로 받을 예정 일단 이대로
 from src.env_variable import MEETING_TEXT
 
 with open(MEETING_TEXT, encoding='utf-8') as f:
