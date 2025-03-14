@@ -4,7 +4,6 @@ from unittest.mock import AsyncMock
 from src.service.meeting_service import get_blip_ai
 from src.main import app
 from io import BytesIO
-from fastapi.testclient import TestClient
 import asyncio
 import httpx
 from httpx import ASGITransport
