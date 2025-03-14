@@ -15,3 +15,9 @@ pydantic
 pyjwt
 pymysql
 python-jose
+
+pytest-asyncio
+unittest
+io
+asyncio
+httpx
