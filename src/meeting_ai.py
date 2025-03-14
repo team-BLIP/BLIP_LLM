@@ -6,7 +6,6 @@ from langchain_community.chat_models import ChatOpenAI
 from langchain.chains.llm import LLMChain
 from langchain.chains import MapReduceDocumentsChain, ReduceDocumentsChain
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
-from src.config.env_variable import OPENAI_KEY
 import whisper
 
 class MeetingSummary:
