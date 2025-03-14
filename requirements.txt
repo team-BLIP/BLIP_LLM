@@ -15,3 +15,6 @@ pydantic
 pyjwt
 pymysql
 python-jose
+
+pytest-asyncio
+httpx
