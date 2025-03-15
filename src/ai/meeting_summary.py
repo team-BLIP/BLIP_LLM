@@ -6,7 +6,6 @@ from langchain_community.chat_models import ChatOpenAI
 from langchain.chains.llm import LLMChain
 from langchain.chains import MapReduceDocumentsChain, ReduceDocumentsChain
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
-import whisper
 
 class MeetingSummary:
     def __init__(self):
@@ -59,36 +58,3 @@ class MeetingSummary:
         texts = self.text_splitter.create_documents([text])
         summary_result = await loop.run_in_executor(None, self.map_reduce_chain.invoke, {'input_documents': texts})
         return summary_result['output_text']
-
-
-class SpeechToText:
-    _model = None  # 싱글톤 모델
-
-    def __init__(self):
-        if SpeechToText._model is None:
-            SpeechToText._model = whisper.load_model('small')
-        self.model = SpeechToText._model
-    
-    async def transcribe_audio(self, file_path: str):
-        loop = asyncio.get_event_loop()
-        result = await loop.run_in_executor(None, lambda: self.model.transcribe(file_path, language='ko'))
-        return result['text']
-
-
-    
-
-class BLIPMeetingAI:
-    def __init__(self, speech_to_text: SpeechToText, meeting_summarizer: MeetingSummary):
-        self.speech_to_text = speech_to_text
-        self.meeting_summarizer = meeting_summarizer
-    
-    async def _transcribe(self, file_path: str):
-        return await self.speech_to_text.transcribe_audio(file_path)
-
-    async def _summarize(self, text: str):
-        return await self.meeting_summarizer.generate_text(text)
-
-    async def summary(self, file_path: str):
-        speech2text = await self._transcribe(file_path)
-        meeting_summary = await self._summarize(speech2text)
-        return meeting_summary

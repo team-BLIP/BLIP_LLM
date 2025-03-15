@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException
-from src.meeting_ai import BLIPMeetingAI, MeetingSummary, SpeechToText
+from src.ai.meeting_ai import BLIPMeetingAI, MeetingSummary, SpeechToText
 import traceback
 
 class BLIPMeetingAIService:
