@@ -12,9 +12,7 @@ langchain_openai
 fastapi
 uvicorn
 pydantic
-pyjwt
-pymysql
-python-jose
+python-multipart
 
 pytest-asyncio
 httpx
