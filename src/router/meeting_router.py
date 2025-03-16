@@ -8,8 +8,8 @@ import time
 
 router = APIRouter()
 
-@router.post('/summary', response_model=SummaryResponse)
-async def meeting_summary(
+@router.post('/meeting', response_model=SummaryResponse)
+async def meeting_ai(
     meeting_service: BLIPMeetingAIService = Depends(get_blip_ai), 
     file: UploadFile = File(...)
 ):
@@ -31,15 +31,14 @@ async def meeting_summary(
         with open(file_path, "wb") as buffer:
             buffer.write(await file.read())
 
-        # 음성 요약 실행
-        result = await meeting_service.meeting_summary(file_path=file_path)
+        # 음성 요약과 피드백을 수행
+        summary, feedback = await meeting_service.meeting(file_path=file_path)
         end_time = time.time()
-        return {'summary' : result, 'time' : f"{(end_time-start_time)//60}분 {(end_time-start_time)%60}초"}
+        return {'summary' : summary,'feedback':feedback, 'time' : f"{(end_time-start_time)//60}분 {(end_time-start_time)%60}초"}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"파일 처리 중 오류 발생: {str(e)}")
 
     finally:
-        # 파일 정리
         if os.path.exists(file_path):
             os.remove(file_path)
