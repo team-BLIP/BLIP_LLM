@@ -6,6 +6,7 @@ pydub
 
 langchain
 langchain_community
+langchain_core
 openai
 langchain_openai
 
