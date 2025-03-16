@@ -5,6 +5,7 @@ from langchain_community.chat_models import ChatOpenAI
 from langchain.chains.llm import LLMChain
 from langchain.chains import MapReduceDocumentsChain, ReduceDocumentsChain
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
+from langchain.schema import Document
 
 class MeetingFeedback:
     def __init__(self):
@@ -59,7 +60,11 @@ class MeetingFeedback:
         )
 
     async def generate_text(self, text: str):
-        """회의 내용을 비동기적으로 피드백"""
+        """회의 내용을 비동기적으로 요약"""
         texts = self.text_splitter.split_text(text)
-        feedback_result = await self.map_reduce_chain.ainvoke({'input_documents': texts})
+        
+        # 문자열 리스트 -> Document 객체 리스트 변환
+        documents = [Document(page_content=t) for t in texts]
+        
+        feedback_result = await self.map_reduce_chain.ainvoke({'input_documents': documents})
         return feedback_result['output_text']
