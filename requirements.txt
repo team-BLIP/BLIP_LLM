@@ -17,3 +17,5 @@ python-multipart
 
 pytest-asyncio
 httpx
+aiofiles
+pytest-mock
