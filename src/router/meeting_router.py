@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, File, UploadFile, HTTPException
 from src.service.meeting_service import BLIPMeetingAIService, get_blip_ai
-from src.router.schema.response import SummaryResponse
+from src.router.schema.response import MeetingResponse
 import os
 import uuid
 from tempfile import gettempdir
@@ -8,7 +8,7 @@ import time
 
 router = APIRouter()
 
-@router.post('/meeting', response_model=SummaryResponse)
+@router.post('/meeting', response_model=MeetingResponse)
 async def meeting_ai(
     meeting_service: BLIPMeetingAIService = Depends(get_blip_ai), 
     file: UploadFile = File(...)

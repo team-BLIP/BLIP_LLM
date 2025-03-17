@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class SummaryResponse(BaseModel):
+class MeetingResponse(BaseModel):
     summary : str
     feedback : str
     time : str
