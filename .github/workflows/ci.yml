@@ -25,6 +25,7 @@ jobs:
       run: |
         echo "$PRIVATE_KEY" > private_key.pem
         chmod 600 private_key.pem
+        ssh-keyscan -H $HOST >> ~/.ssh/known_hosts  # EC2 호스트 키를 known_hosts에 추가
         scp -i private_key.pem -o StrictHostKeyChecking=no docker-compose.yml $USER@$HOST:/home/$USER/
         ssh -i private_key.pem -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
           docker-compose down
