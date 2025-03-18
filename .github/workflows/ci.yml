@@ -28,7 +28,7 @@ jobs:
 
     # 테스트 실행
     - name: Run Tests
-      run: pytest
+      run: python -m pytest src/test
 
     # EC2에 접속하고 배포 (docker-compose 사용)
     - name: Deploy with Docker Compose
