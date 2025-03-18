@@ -1,34 +1,46 @@
-name: Deploy to EC2 using Docker
+name: Python & Gradle CI/CD
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+
+permissions:
+  contents: read
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-    - name: Build Docker image
+    # Python 설정
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+      
+    # Python 패키지 설치
+    - name: Install dependencies
       run: |
-        docker build -t my-app:latest .
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-    - name: Login to EC2 and deploy
-      env:
-        PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-        HOST: ${{ secrets.EC2_HOST }}
-        USER: ubuntu  # EC2의 기본 사용자
-      run: |
-        echo "$PRIVATE_KEY" > private_key.pem
-        chmod 600 private_key.pem
-        mkdir -p ~/.ssh  # .ssh 디렉토리가 없을 경우 생성
-        ssh-keyscan -H $HOST >> ~/.ssh/known_hosts  # EC2 호스트 키를 known_hosts에 추가
-        scp -i private_key.pem -o StrictHostKeyChecking=no docker-compose.yml $USER@$HOST:/home/$USER/
-        ssh -i private_key.pem -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
-          docker-compose down
-          docker-compose up -d --build
-        EOF
+    # 테스트 실행
+    - name: Run Tests
+      run: pytest
+
+    # EC2에 접속하고 배포 (docker-compose 사용)
+    - name: Deploy with Docker Compose
+      uses: appleboy/ssh-action@master
+      with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.EC2_SSH_PORT }}
+
+          script: |
+            cd /home/${{ secrets.EC2_USERNAME }}/app  # docker-compose.yml 위치로 이동
+            sudo docker-compose down
+            sudo docker-compose pull
+            sudo docker-compose up -d --build
