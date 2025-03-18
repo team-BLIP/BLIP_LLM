@@ -41,6 +41,7 @@ jobs:
 
           script: |
             cd /home/${{ secrets.EC2_USERNAME }}/app  # docker-compose.yml 위치로 이동
-            sudo docker-compose down
-            sudo docker-compose pull
-            sudo docker-compose up -d --build
+            docker-compose down
+            docker system prune -f
+            docker-compose pull
+            docker-compose up -d --build
