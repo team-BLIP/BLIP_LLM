@@ -1,0 +1,32 @@
+name: Deploy to EC2 using Docker
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Build Docker image
+      run: |
+        docker build -t my-app:latest .
+
+    - name: Login to EC2 and deploy
+      env:
+        PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        HOST: ${{ secrets.EC2_HOST }}
+        USER: ubuntu  # EC2의 기본 사용자
+      run: |
+        echo "$PRIVATE_KEY" > private_key.pem
+        chmod 600 private_key.pem
+        scp -i private_key.pem -o StrictHostKeyChecking=no docker-compose.yml $USER@$HOST:/home/$USER/
+        ssh -i private_key.pem -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
+          docker-compose down
+          docker-compose up -d --build
+        EOF

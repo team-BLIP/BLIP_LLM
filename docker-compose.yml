@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  blip:
+    build: .
+    container_name: meeting_ai
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
