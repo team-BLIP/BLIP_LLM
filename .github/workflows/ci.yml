@@ -49,10 +49,10 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
+        username: ec2-user
         key: ${{ secrets.EC2_SSH_PRIVATE_KEY }} 
         script: |
-          cd /home/ubuntu/app  # 프로젝트 디렉토리로 이동
+          cd /home/ec2-user/app  # 프로젝트 디렉토리로 이동
           
           # 기존 컨테이너 종료 및 삭제 (주의!)
           RUNNING_CONTAINER=$(sudo docker ps -q)
