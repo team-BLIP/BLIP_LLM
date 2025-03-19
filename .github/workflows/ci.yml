@@ -50,7 +50,7 @@ jobs:
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
-        key: ${{ secrets.EC2_SSH_PORT }} 
+        key: ${{ secrets.EC2_SSH_PRIVATE_KEY }} 
         script: |
           cd /home/ubuntu/app  # 프로젝트 디렉토리로 이동
           
