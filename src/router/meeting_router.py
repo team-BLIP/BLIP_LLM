@@ -6,7 +6,6 @@ import os
 import time
 import httpx
 import logging
-import mimetypes
 from urllib.parse import urlparse
 from tempfile import NamedTemporaryFile
 
@@ -25,14 +24,10 @@ async def meeting_ai(
     if parsed_url.scheme not in ["http", "https"]:
         raise HTTPException(status_code=400, detail="올바른 S3 URL이 아닙니다.")
 
-    # MIME 타입 확인
-    mime_type, _ = mimetypes.guess_type(s3_url)
-    if mime_type not in ["audio/mpeg", "audio/mp3"]:
-        raise HTTPException(status_code=400, detail="지원되지 않는 오디오 파일 형식입니다.")
-
-    # 임시 파일 생성
+    # 임시 파일 생성 및 명시적 close (Windows 호환)
     with NamedTemporaryFile(delete=False, suffix=".mp3") as temp_file:
         file_path = temp_file.name
+        temp_file.close()
 
     try:
         start_time = time.perf_counter()  # 성능 측정 시작
@@ -40,7 +35,7 @@ async def meeting_ai(
         # 파일 다운로드
         async with httpx.AsyncClient() as client:
             response = await client.get(s3_url)
-            await response.raise_for_status()  # 추가: 올바른 예외 발생 유도
+            response.raise_for_status()
 
         # 파일 저장
         with open(file_path, "wb") as buffer:
@@ -49,20 +44,24 @@ async def meeting_ai(
         if not os.path.exists(file_path):
             logger.warning(f"파일이 저장되지 않음: {file_path}")
 
-        # 음성 요약 & 피드백
+        # 음성 요약 & 피드백 처리
         summary, feedback = await meeting_service.meeting(file_path=file_path)
         elapsed_time = time.perf_counter() - start_time
-
         elapsed_min, elapsed_sec = divmod(elapsed_time, 60)
-        return {
-            'summary': summary,
-            'feedback': feedback,
-            'time': f"{int(elapsed_min)}분 {int(elapsed_sec)}초"
-        }
+
+        return MeetingResponse(
+            summary=summary,
+            feedback=feedback,
+            time=f"{int(elapsed_min)}분 {int(elapsed_sec)}초"
+        )
 
     except httpx.HTTPStatusError as e:
-        logger.error(f"S3 요청 실패: {e}", exc_info=True)
-        raise HTTPException(status_code=400, detail=f"S3에서 파일을 가져올 수 없습니다. (HTTP {e.response.status_code})")
+        if e.response.status_code == 400:
+            detail = "S3 presigned URL이 만료되었거나 권한이 없습니다."
+        else:
+            detail = f"S3에서 파일을 가져올 수 없습니다. (HTTP {e.response.status_code})"
+        logger.error(detail, exc_info=True)
+        raise HTTPException(status_code=400, detail=detail)
 
     except httpx.RequestError as e:
         logger.error(f"S3 요청 오류: {e}", exc_info=True)
